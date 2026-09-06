@@ -1,0 +1,57 @@
+{%- assign cfg = trmnl.plugin_settings.custom_fields_values -%}
+{%- assign lang = cfg.lang | default: 'de' -%}
+{%- assign price_role = cfg.price | default: 'student' -%}
+{%- assign diet = cfg.diet | default: 'all' -%}
+
+{%- assign glutenfree_only = false -%}{%- if cfg.glutenfree == true or cfg.glutenfree == 'true' -%}{%- assign glutenfree_only = true -%}{%- endif -%}
+{%- assign show_all_allergens = false -%}{%- if cfg.show_all_allergens == true or cfg.show_all_allergens == 'true' -%}{%- assign show_all_allergens = true -%}{%- endif -%}
+{%- assign show_additives = false -%}{%- if cfg.show_additives == true or cfg.show_additives == 'true' -%}{%- assign show_additives = true -%}{%- endif -%}
+{%- assign no_colors = false -%}{%- if cfg.no_colors == true or cfg.no_colors == 'true' -%}{%- assign no_colors = true -%}{%- endif -%}
+
+{%- comment -%} chromatic classes fall back to greyscale on mono devices by themselves {%- endcomment -%}
+{%- assign vegan_class = ' label--success' -%}
+{%- assign vegetarian_class = ' label--primary' -%}
+{%- if no_colors -%}{%- assign vegan_class = ' label--outline' -%}{%- assign vegetarian_class = ' label--outline' -%}{%- endif -%}
+
+{%- if lang == 'en' -%}
+  {%- assign t_closed = 'Closed today' -%}
+  {%- assign t_nothing = 'Nothing on the menu for you' -%}
+  {%- assign t_meal = 'Meal' -%}
+  {%- assign t_price = 'Price' -%}
+  {%- assign t_vegan = 'vegan' -%}
+  {%- assign t_vegetarian = 'vegetarian' -%}
+  {%- assign date_format = '%a, %b %d' -%}
+  {%- assign dec = '.' -%}
+  {%- case price_role -%}
+    {%- when 'staff' -%}{%- assign t_role = 'Staff' -%}
+    {%- when 'guest' -%}{%- assign t_role = 'Guest' -%}
+    {%- else -%}{%- assign t_role = 'Student' -%}
+  {%- endcase -%}
+{%- else -%}
+  {%- assign t_closed = 'Heute geschlossen' -%}
+  {%- assign t_nothing = 'Heute nichts für dich dabei' -%}
+  {%- assign t_meal = 'Gericht' -%}
+  {%- assign t_price = 'Preis' -%}
+  {%- assign t_vegan = 'vegan' -%}
+  {%- assign t_vegetarian = 'vegetarisch' -%}
+  {%- assign date_format = '%d.%m.%Y' -%}
+  {%- assign dec = ',' -%}
+  {%- case price_role -%}
+    {%- when 'staff' -%}{%- assign t_role = 'Bedienstete' -%}
+    {%- when 'guest' -%}{%- assign t_role = 'Gäste' -%}
+    {%- else -%}{%- assign t_role = 'Studierende' -%}
+  {%- endcase -%}
+{%- endif -%}
+
+{%- assign visible = meals -%}
+{%- if diet == 'vegan' -%}{%- assign visible = visible | where: 'vegan', true -%}
+{%- elsif diet == 'vegetarian' -%}{%- assign visible = visible | where: 'vegetarian', true -%}{%- endif -%}
+{%- if glutenfree_only -%}{%- assign visible = visible | where: 'glutenfree', true -%}{%- endif -%}
+{%- assign visible_count = visible | size -%}
+
+{%- assign empty_reason = '' -%}
+{%- if closed -%}{%- assign empty_reason = t_closed -%}
+{%- elsif visible_count == 0 -%}{%- assign empty_reason = t_nothing -%}{%- endif -%}
+
+{%- comment -%} canteen closed (or filtered to nothing): let the playlist skip this screen {%- endcomment -%}
+{%- if empty_reason != '' -%}<script>window.TRMNL_SKIP_DISPLAY = true;</script>{%- endif -%}

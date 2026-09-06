@@ -1,0 +1,68 @@
+---
+name: OpenMensa
+strategy: polling
+polling_verb: get
+polling_url: '{{ feed_url }}'
+no_screen_padding: 'no'
+dark_mode: 'no'
+custom_fields:
+  - keyname: feed_url
+    field_type: url
+    name: Feed URL
+    description: Any OpenMensa-compatible feed — an OpenMensa Feed v2 XML document, or an OpenMensa API v2 endpoint that returns days with meals.
+    help_text: 'Find a canteen id at openmensa.org, then use https://openmensa.org/api/v2/canteens/&lt;id&gt;/meals'
+    placeholder: https://openmensa.org/api/v2/canteens/256/meals
+    default: https://openmensa.org/api/v2/canteens/256/meals
+  - keyname: diet
+    field_type: select
+    name: Diet
+    description: Only show meals matching this diet.
+    options:
+      - 'All: all'
+      - 'Vegetarian: vegetarian'
+      - 'Vegan: vegan'
+    default: all
+  - keyname: glutenfree
+    field_type: boolean
+    name: Gluten free only
+    description: Only show meals with no gluten in their published allergens.
+    default: false
+  - keyname: price
+    field_type: select
+    name: Price
+    description: Which price to display.
+    options:
+      - 'Student: student'
+      - 'Staff: staff'
+      - 'Guest: guest'
+    default: student
+  - keyname: lang
+    field_type: select
+    name: Language
+    description: Language of the plugin labels. Meal names come from the feed.
+    options:
+      - 'Deutsch: de'
+      - 'English: en'
+    default: de
+  - keyname: show_all_allergens
+    field_type: boolean
+    name: Show all allergens
+    description: By default only allergens relevant to vegans (milk, egg, fish, meat) are shown.
+    default: false
+  - keyname: show_additives
+    field_type: boolean
+    name: Show additives
+    description: Show additives (colourings, preservatives, ...) next to the allergens.
+    default: false
+  - keyname: no_colors
+    field_type: boolean
+    name: No colors
+    description: Render in greyscale only. Off means colored diet badges, which fall back to greyscale on monochrome devices anyway.
+    default: false
+  - keyname: about
+    name: About
+    field_type: author_bio
+    category: food
+    description: Today's canteen menu from any OpenMensa-compatible feed.
+    github_url: https://github.com/alexanderwallau/trmnl-openmensa
+    learn_more_url: https://openmensa.org

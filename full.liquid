@@ -1,0 +1,49 @@
+{% if empty_reason != '' %}
+<div class="layout layout--col layout--center">
+  <span class="value value--xlarge">{{ empty_reason }}</span>
+  <span class="label label--gray">{{ date | date: date_format }}</span>
+</div>
+{% else %}
+<div class="layout">
+  <table class="table" data-table-limit="true">
+    <thead>
+      <tr>
+        <th><span class="title title--small">{{ t_meal }}</span></th>
+        <th><span class="title title--small"></span></th>
+        <th><span class="title title--small">{{ t_price }}</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for meal in visible %}
+        {% assign notes = meal.key_allergens %}
+        {% if show_all_allergens %}{% assign notes = meal.allergens %}{% endif %}
+        {% if show_additives %}{% assign notes = notes | concat: meal.additives %}{% endif %}
+        {% assign price = meal.prices[price_role] %}
+        <tr>
+          <td>
+            <div class="flex flex--col gap--none">
+              <span class="title title--small" data-clamp="2">{{ meal.name }}</span>
+              <span class="label label--xsmall label--gray" data-clamp="1">
+                {{ meal.category }}{% if notes.size > 0 %} — {{ notes | join: ', ' }}{% endif %}
+              </span>
+            </div>
+          </td>
+          <td>
+            {% if meal.vegan %}<span class="label label--xsmall{{ vegan_class }}">{{ t_vegan }}</span>
+            {% elsif meal.vegetarian %}<span class="label label--xsmall{{ vegetarian_class }}">{{ t_vegetarian }}</span>{% endif %}
+          </td>
+          <td class="text--right">
+            {% if price != '' %}<span class="value value--xsmall value--tnums">{{ price | replace: '.', dec }} €</span>{% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+<div class="title_bar">
+  <img class="image" src="https://trmnl.com/images/plugins/trmnl--render.svg">
+  <span class="title">{{ trmnl.plugin_settings.instance_name | default: 'OpenMensa' }}</span>
+  <span class="instance">{{ date | date: date_format }} · {{ t_role }}</span>
+</div>

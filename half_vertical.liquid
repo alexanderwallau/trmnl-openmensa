@@ -1,0 +1,34 @@
+{% if empty_reason != '' %}
+<div class="layout layout--col layout--center">
+  <span class="value value--large">{{ empty_reason }}</span>
+  <span class="label label--gray">{{ date | date: date_format }}</span>
+</div>
+{% else %}
+<div class="layout">
+  <div class="columns" data-overflow-max-cols="1">
+    <div class="column">
+      {% for meal in visible %}
+        {% assign notes = meal.key_allergens %}
+        {% if show_all_allergens %}{% assign notes = meal.allergens %}{% endif %}
+        {% if show_additives %}{% assign notes = notes | concat: meal.additives %}{% endif %}
+        {% assign price = meal.prices[price_role] %}
+        <div class="item">
+          <div class="meta"></div>
+          <div class="content">
+            <span class="title title--small" data-clamp="2">{{ meal.name }}</span>
+            <span class="label label--xsmall label--gray" data-clamp="1">
+              {% if price != '' %}{{ price | replace: '.', dec }} € · {% endif %}{{ meal.category }}{% if notes.size > 0 %} — {{ notes | join: ', ' }}{% endif %}
+            </span>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<div class="title_bar">
+  <img class="image" src="https://trmnl.com/images/plugins/trmnl--render.svg">
+  <span class="title">{{ trmnl.plugin_settings.instance_name | default: 'OpenMensa' }}</span>
+  <span class="instance">{{ date | date: date_format }} · {{ t_role }}</span>
+</div>

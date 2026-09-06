@@ -1,0 +1,28 @@
+{% if empty_reason != '' %}
+<div class="layout layout--col layout--center">
+  <span class="value value--small">{{ empty_reason }}</span>
+</div>
+{% else %}
+<div class="layout">
+  <div class="columns" data-overflow-max-cols="1">
+    <div class="column">
+      {% for meal in visible limit: 3 %}
+        {% assign price = meal.prices[price_role] %}
+        <div class="item">
+          <div class="meta"></div>
+          <div class="content">
+            <span class="title title--xsmall" data-clamp="1">{{ meal.name }}</span>
+            {% if price != '' %}<span class="label label--xsmall label--gray">{{ price | replace: '.', dec }} €</span>{% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<div class="title_bar">
+  <img class="image" src="https://trmnl.com/images/plugins/trmnl--render.svg">
+  <span class="title">{{ trmnl.plugin_settings.instance_name | default: 'OpenMensa' }}</span>
+  <span class="instance">{{ date | date: date_format }}</span>
+</div>
