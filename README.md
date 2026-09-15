@@ -14,8 +14,7 @@ Requires Node.js 22+ and a Cloudflare account.
 npm ci
 ```
 
-Set `vars.FEED_URL` in `wrangler.jsonc` to your OpenMensa JSON or XML feed (see below),
-then deploy:
+Deploy the shared Worker:
 
 ```sh
 npx wrangler login
@@ -23,8 +22,10 @@ npm run deploy
 ```
 
 The Worker serves today's transformed menu as JSON at
-`https://trmnl-openmensa.<your-subdomain>.workers.dev/`. The upstream feed is configured
-on the Worker; request parameters cannot change it. Upstream failures return HTTP 502
+`https://trmnl-openmensa.<your-subdomain>.workers.dev/?feed_url=<encoded-feed-url>`.
+Each user chooses their upstream feed in the TRMNL UI; one Worker can serve different
+canteens without redeployment. Requests without `feed_url` use `vars.FEED_URL` in
+`wrangler.jsonc` as a default. Invalid feed URLs return HTTP 400. Upstream failures return HTTP 502
 so a broken feed is not reported as a closed canteen.
 
 For local development, run `npm run dev` and open `http://localhost:8787/`.
@@ -47,16 +48,27 @@ files from this repo into the matching fields:
 | `shared.liquid` | shared markup |
 | `full.liquid`, `half_horizontal.liquid`, `half_vertical.liquid`, `quadrant.liquid` | the four views |
 
-Set the plugin's **Feed URL** to your deployed Worker URL. Leave the transform / "edit
-data" field empty (remove the old transform when migrating); the Worker already runs
-`transform.js`. Diet, price, language, and display options still run in the Liquid views.
+**Worker URL** defaults to the deployed shared Worker. If you deploy your own, enter
+its root URL (without query parameters). Set **Feed URL** to your preferred canteen's
+OpenMensa JSON or XML feed. Anyone using the
+plugin can change **Feed URL** in the UI to switch canteens. The polling URL encodes
+the feed URL before passing it to the Worker.
 
-To use TRMNL without a Worker, point **Feed URL** directly at the upstream feed and
+When sharing a recipe with your own Worker, change the **Worker URL** field's `default` in `settings.yml`
+to your deployed URL so other users only need to choose their feed.
+
+Leave the transform / "edit data" field empty (remove the old transform when migrating);
+the Worker already runs `transform.js`. Diet, price, language, and display options
+still run in the Liquid views. For existing installations, update the form fields
+and polling URL from `settings.yml`, move the old **Feed URL** value to **Worker URL**,
+and enter the upstream canteen URL in **Feed URL**.
+
+To use TRMNL without a Worker, set the polling URL to `{{ feed_url }}` and
 paste `transform.js` into the transform / "edit data" field as before.
 
 ## Feed
 
-Set the Worker's `FEED_URL` to anything that serves today's menu in OpenMensa's shape:
+Set **Feed URL** in the plugin UI to anything that serves today's menu in OpenMensa's shape:
 
 - `https://openmensa.org/api/v2/canteens/<id>/meals` — days with meals, for any canteen
   listed on openmensa.org (find the id via `https://openmensa.org/api/v2/canteens`)
@@ -66,7 +78,7 @@ Set the Worker's `FEED_URL` to anything that serves today's menu in OpenMensa's 
 **CAMPO and the other Studierendenwerk Bonn canteens are not on openmensa.org.** To use
 them, publish a feed yourself — [`bonn-mensa`](https://github.com/alexanderwallau/bonn-mensa)
 writes one with `mensa --mensa CAMPO --xml campo.xml` — host that file anywhere TRMNL can
-reach it, and point the Worker's `FEED_URL` at it.
+reach it, and enter its URL in **Feed URL**.
 
 ## Options
 

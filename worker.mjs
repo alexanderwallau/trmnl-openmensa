@@ -10,21 +10,27 @@ const xml = new XMLParser({
 
 export default {
   async fetch(request, env) {
-    if (new URL(request.url).pathname !== '/') {
+    const url = new URL(request.url);
+    if (url.pathname !== '/') {
       return new Response('Not found', { status: 404 });
     }
     if (request.method !== 'GET') {
       return new Response('Method not allowed', { status: 405, headers: { Allow: 'GET' } });
     }
 
+    const selectedFeed = url.searchParams.get('feed_url');
     let feed;
     try {
-      feed = new URL(env.FEED_URL);
+      feed = new URL(selectedFeed ?? env.FEED_URL);
       if (!['http:', 'https:'].includes(feed.protocol) || feed.username || feed.password) {
         throw new Error('Invalid feed URL');
       }
     } catch {
-      return Response.json({ error: 'Configure FEED_URL with an HTTP(S) feed URL.' }, { status: 500 });
+      return Response.json({
+        error: selectedFeed !== null
+          ? 'Provide feed_url as an HTTP(S) feed URL without credentials.'
+          : 'Configure FEED_URL with an HTTP(S) feed URL.',
+      }, { status: selectedFeed !== null ? 400 : 500 });
     }
 
     try {

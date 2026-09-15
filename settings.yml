@@ -2,15 +2,22 @@
 name: OpenMensa
 strategy: polling
 polling_verb: get
-polling_url: '{{ feed_url }}'
+polling_url: '{{ worker_url }}?feed_url={{ feed_url | url_encode }}'
 no_screen_padding: 'no'
 dark_mode: 'no'
 custom_fields:
   - keyname: feed_url
     field_type: url
     name: Feed URL
-    description: Your deployed OpenMensa Worker URL. Leave the TRMNL transform field empty when using the Worker.
-    help_text: 'Configure the upstream JSON or XML feed using FEED_URL in wrangler.jsonc before deploying.'
+    description: The OpenMensa JSON or XML feed for your preferred canteen.
+    help_text: Change this URL to switch canteens. No Worker redeployment is needed.
+    placeholder: https://openmensa.org/api/v2/canteens/256/meals
+  - keyname: worker_url
+    field_type: url
+    name: Worker URL
+    description: The deployed OpenMensa Worker shared by this plugin's users.
+    help_text: Use the root URL without query parameters. Leave the TRMNL transform field empty.
+    default: https://trmnl-openmensa.muddy-glitter-17bc.workers.dev/
     placeholder: https://trmnl-openmensa.your-subdomain.workers.dev/
   - keyname: diet
     field_type: select
