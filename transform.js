@@ -110,3 +110,6 @@ function transform(input) {
     meals: meals
   };
 }
+
+// Also usable by the Worker; remains pasteable into TRMNL's transform editor.
+if (typeof module !== 'undefined') module.exports = transform;

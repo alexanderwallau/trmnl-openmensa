@@ -1,6 +1,6 @@
 // node test_transform.js  — one check for the shape-walking + diet heuristics.
 const assert = require('assert');
-eval(require('fs').readFileSync(__dirname + '/transform.js', 'utf8'));
+const transform = require('./transform.js');
 
 const today = new Date().toISOString().slice(0, 10);
 
